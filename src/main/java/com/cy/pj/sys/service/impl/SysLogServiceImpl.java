@@ -37,7 +37,7 @@ public class SysLogServiceImpl implements SysLogService {
             throw new ServiceException("记录不存在");
         }
         //查询总页数
-        int pageSize=3;
+        int pageSize=15;
         int startIndex=(pageCurrent-1)*pageSize;
         List<SysLog> records= sysLogDao.findPageObjects(username,startIndex,pageSize);
         PageObject<SysLog> sysLogPageObject = new PageObject<>(rowCount, records, pageCurrent, pageSize);
