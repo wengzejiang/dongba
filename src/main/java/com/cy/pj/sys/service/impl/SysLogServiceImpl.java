@@ -40,8 +40,19 @@ public class SysLogServiceImpl implements SysLogService {
         int pageSize=15;
         int startIndex=(pageCurrent-1)*pageSize;
         List<SysLog> records= sysLogDao.findPageObjects(username,startIndex,pageSize);
-        PageObject<SysLog> sysLogPageObject = new PageObject<>(rowCount, records, pageCurrent, pageSize);
         //对数据进行封装
-        return sysLogPageObject;
+        return new PageObject<>(rowCount, records, pageCurrent, pageSize);
+    }
+
+    @Override
+    public int deleteObjects(Integer... ids) {
+        if(ids==null || ids.length==0){
+            throw new IllegalArgumentException("请先选择");
+        }
+        int rows = sysLogDao.deleteObjects(ids);
+        if(rows==0){
+            throw new ServiceException("记录不存在");
+        }
+        return rows;
     }
 }

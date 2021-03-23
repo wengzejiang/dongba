@@ -22,22 +22,22 @@ import java.util.List;
 public class PageObject<T> implements Serializable {
     private static final long serialVersionUID = 213123L;
     //总记录数
-    private Integer rowCounter;
+    private Integer rowCount;
     //当前页要呈现的记录
     private List<T> records;
     //总页数
-    private Integer pageCounter;
+    private Integer pageCount;
     //当前页码值
     private Integer pageCurrent;
     //页面大小
     private Integer pageSize;
 
     public PageObject(Integer rowCounter, List<T> records, Integer pageCurrent, Integer pageSize) {
-        this.rowCounter = rowCounter;
+        this.rowCount = rowCounter;
         this.records = records;
         this.pageCurrent = pageCurrent;
         this.pageSize = pageSize;
         //计算总页数
-        this.pageCounter=(rowCounter-1)/pageSize+1;
+        this.pageCount=(rowCounter-1)/pageSize+1;
     }
 }

@@ -2,6 +2,7 @@ package com.cy.pj.sys.service;
 
 import com.cy.pj.common.vo.PageObject;
 import com.cy.pj.sys.entity.SysLog;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,4 +20,6 @@ public interface SysLogService {
 
     //基于用户请求，进行日志信息的分页查询，并对结果进行封装和计算
     PageObject<SysLog> findPageObjects(String username, Integer pageCurrent);
+
+    int deleteObjects(Integer... ids);
 }

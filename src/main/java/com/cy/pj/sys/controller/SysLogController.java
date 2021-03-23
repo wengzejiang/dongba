@@ -35,4 +35,11 @@ public class SysLogController {
         System.out.println(jsonResult);
         return jsonResult;
     }
+
+    @ResponseBody
+    @RequestMapping("doDeleteObjects")
+    public JsonResult doDeleteObjects(Integer... ids){
+        sysLogService.deleteObjects(ids);
+        return new JsonResult("delete ok");
+    }
 }

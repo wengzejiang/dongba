@@ -15,7 +15,8 @@
 
     <select id="getRowCount" resultType="int">
         select count(*)
-        <include refid="queryWhereId"></include>
+        <include refid="queryWhereId">
+        </include>
     </select>
 
 
@@ -25,5 +26,22 @@
         order by createdTime desc
         limit #{startIndex},#{pageSize}
     </select>
+
+    <delete id="deleteObjects">
+    delete from sys_logs
+    <choose>
+        <when test="ids != null and ids.length != 0">
+            <where>
+                <foreach collection="ids" separator="or" item="id">
+                    id=#{id,jdbcType=INTEGER}
+                </foreach>
+            </where>
+        </when>
+        <otherwise>
+            where 1==2
+        </otherwise>
+    </choose>
+
+    </delete>
 
 </mapper>
