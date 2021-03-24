@@ -4,12 +4,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cy.pj.sys.dao.SysMenuDao">
 
-
+    <!--查询所有的菜单信息以及当前菜单对应上级菜单名称，一行记录记录映射为一个map-->
     <select id="findObjects" resultType="map">
         select c.*,p.name parentName
         from sys_menus c left join sys_menus p
-        on c.parentId=p.id;
+        on c.parentId=p.id
     </select>
+    <select id="getChildCount" resultType="int">
+        select count(*) from sys_menus where parentId=#{id}
+    </select>
+    <delete id="deleteObject">
+        delete from sys_menus where id=#{id}
+    </delete>
 
 
 </mapper>

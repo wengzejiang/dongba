@@ -1,26 +1,20 @@
-package com.cy.pj.sys.dao;
-
-import org.apache.ibatis.annotations.Mapper;
+package com.cy.pj.sys.service;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Package: com.cy.pj.sys.dao
+ * Package: com.cy.pj.sys.service
  * Description： TODO
  * Author: wengzejiang
- * Date: Created in 2021/3/23 0023 22:58
+ * Date: Created in 2021/3/24 0024 22:19
  * Company: 暂无
  * Version: 0.0.1
  * Modified By:
  */
-@Mapper
-public interface SysMenuDao {
+public interface SysMenuService {
 
     List<Map<String, Object>> findObjects();
 
-    int getChildCount(Integer id);
-
     int deleteObject(Integer id);
-
 }
