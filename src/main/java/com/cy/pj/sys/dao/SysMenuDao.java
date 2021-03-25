@@ -1,5 +1,7 @@
 package com.cy.pj.sys.dao;
 
+import com.cy.pj.common.vo.Node;
+import com.cy.pj.sys.entity.SysMenu;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -22,5 +24,9 @@ public interface SysMenuDao {
     int getChildCount(Integer id);
 
     int deleteObject(Integer id);
+
+    List<Node> findZtreeMenuNodes();
+
+    int insertObject(SysMenu sysMenu);
 
 }

@@ -1,11 +1,14 @@
 package com.cy.pj.sys.service.impl;
 
 import com.cy.pj.common.exception.ServiceException;
+import com.cy.pj.common.vo.Node;
 import com.cy.pj.sys.dao.SysMenuDao;
 import com.cy.pj.sys.dao.SysRoleMenuDao;
+import com.cy.pj.sys.entity.SysMenu;
 import com.cy.pj.sys.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -51,5 +54,24 @@ public class SysMenuServiceImpl implements SysMenuService {
             throw new ServiceException("记录可能不存在");
         }
         return rows;
+    }
+
+    @Override
+    public List<Node> findZtreeMenuNodes() {
+        return sysMenuDao.findZtreeMenuNodes();
+    }
+
+    @Override
+    public int insertObject(SysMenu sysMenu) {
+        if(sysMenu==null){
+            throw new ServiceException("保存对象不能为空");
+        }
+        if(StringUtils.isEmpty(sysMenu.getName())){
+            throw new ServiceException("菜单名不允许为空");
+        }
+        if(StringUtils.isEmpty(sysMenu.getPermission())){
+            throw new ServiceException("授权标识不允许为空");
+        }
+        return sysMenuDao.insertObject(sysMenu);
     }
 }
