@@ -52,4 +52,12 @@ public class SysMenuController {
         sysMenuService.insertObject(entity);
         return new JsonResult("save ok");
     }
+
+    @RequestMapping("doUpdateObject")
+    @ResponseBody
+    public JsonResult doUpdateObject(
+            SysMenu entity){
+        sysMenuService.updateObject(entity);
+        return new JsonResult("update ok");
+    }
 }

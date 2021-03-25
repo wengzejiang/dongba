@@ -27,6 +27,18 @@
         (#{name},#{url},#{type},#{sort},#{note},#{parentId},
         #{permission},now(),now(),#{createdUser},#{modifiedUser})
     </insert>
+    <update id="updateObject" parameterType="com.cy.pj.sys.entity.SysMenu">
+    update sys_menus set
+        name=#{name},
+        type=#{type},
+        sort=#{sort},
+        url=#{url},
+        parentId=#{parentId},
+        permission=#{permission},
+        modifiedUser=#{modifiedUser},
+        modifiedTime=now()
+        where id=#{id}
+    </update>
 
 
 </mapper>

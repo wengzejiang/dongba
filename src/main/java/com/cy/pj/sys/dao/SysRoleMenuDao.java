@@ -2,6 +2,7 @@ package com.cy.pj.sys.dao;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Package: com.cy.pj.sys.dao
@@ -16,5 +17,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface SysRoleMenuDao {
 
     @Delete("delete from sys_role_menus where id=#{id}")
-    int deleteObjectsByMenuId(Integer id);
+    int deleteObjectsByMenuId(@Param("id") Integer id);
 }

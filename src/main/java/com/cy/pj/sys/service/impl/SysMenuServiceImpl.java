@@ -74,4 +74,18 @@ public class SysMenuServiceImpl implements SysMenuService {
         }
         return sysMenuDao.insertObject(sysMenu);
     }
+
+    @Override
+    public int updateObject(SysMenu entity) {
+        //1.合法验证
+        if(entity==null)
+            throw new ServiceException("保存对象不能为空");
+        if(StringUtils.isEmpty(entity.getName()))
+            throw new ServiceException("菜单名不能为空");
+        //2.更新数据
+        int rows=sysMenuDao.updateObject(entity);
+        if(rows==0)
+            throw new ServiceException("记录可能已经不存在");
+        return rows;
+    }
 }
