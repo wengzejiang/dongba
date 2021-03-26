@@ -5,6 +5,7 @@ import com.cy.pj.sys.dao.SysLogDao;
 import com.cy.pj.sys.dao.SysMenuDao;
 import com.cy.pj.sys.entity.SysLog;
 import com.cy.pj.sys.service.SysLogService;
+import com.cy.pj.sys.service.SysRoleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +24,8 @@ class ApplicationTests {
 
     @Autowired
     private SysMenuDao sysMenuDao;
+    @Autowired
+    private SysRoleService sysRoleService;
 
     @Test
     void contextLoads() {
@@ -51,5 +54,9 @@ class ApplicationTests {
         }
     }
 
+    @Test
+    public void test(){
+        sysRoleService.deleteObject(46);
+    }
 
 }

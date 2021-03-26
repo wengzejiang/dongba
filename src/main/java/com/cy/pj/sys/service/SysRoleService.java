@@ -2,6 +2,7 @@ package com.cy.pj.sys.service;
 
 import com.cy.pj.common.vo.PageObject;
 import com.cy.pj.sys.entity.SysRole;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -15,5 +16,9 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SysRoleService {
 
+    int deleteObject(Integer id);
+
     PageObject<SysRole> findPageObjects(String name,Integer pageCurrent);
+
+    int insertObjects(SysRole entity,Integer... menuIds);
 }

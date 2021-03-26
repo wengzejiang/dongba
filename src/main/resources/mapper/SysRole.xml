@@ -25,4 +25,14 @@
         order by createdTime desc
         limit #{startIndex},#{pageSize}
     </select>
+
+    <!--useGeneratedKeys表示使用insert操作的主键值 keyProperty表示将获取的自增值赋值给参数对象SysRole的id属性-->
+    <insert id="insertObject" parameterType="com.cy.pj.sys.entity.SysRole" useGeneratedKeys="true" keyProperty="id">
+    insert into sys_roles
+        (id,name,note,createdTime,modifiedTime,
+        createdUser,modifiedUser)
+        values
+        (null,#{name},#{note},now(),now(),
+        #{createdUser},#{modifiedUser})
+    </insert>
 </mapper>

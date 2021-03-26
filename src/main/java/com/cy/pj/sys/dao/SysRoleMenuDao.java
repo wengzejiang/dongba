@@ -16,6 +16,11 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface SysRoleMenuDao {
 
-    @Delete("delete from sys_role_menus where id=#{id}")
+    @Delete("delete from sys_role_menus where menu_id=#{id}")
     int deleteObjectsByMenuId(@Param("id") Integer id);
+
+    @Delete("delete from sys_role_menus where role_id=#{roleId}")
+    int deleteObjectsByRoleId(Integer roleId);
+
+    int insertObjects(@Param("roleId") Integer roleId,@Param("menuIds") Integer... menuIds);
 }

@@ -3,10 +3,13 @@ package com.cy.pj.sys.service.impl;
 import com.cy.pj.common.exception.ServiceException;
 import com.cy.pj.common.vo.PageObject;
 import com.cy.pj.sys.dao.SysRoleDao;
+import com.cy.pj.sys.dao.SysRoleMenuDao;
+import com.cy.pj.sys.dao.SysUserRoleDao;
 import com.cy.pj.sys.entity.SysRole;
 import com.cy.pj.sys.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -24,6 +27,23 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Autowired
     private SysRoleDao sysRoleDao;
+    @Autowired
+    private SysUserRoleDao sysUserRoleDao;
+    @Autowired
+    private SysRoleMenuDao sysRoleMenuDao;
+    @Override
+    public int deleteObject(Integer id) {
+        if(id==null||id<1){
+            throw new IllegalArgumentException("id值无效");
+        }
+        sysRoleMenuDao.deleteObjectsByRoleId(id);
+        sysUserRoleDao.deleteObjectsByRoleId(id);
+        int rows = sysRoleDao.deleteObject(id);
+        if(rows==0){
+            throw new ServiceException("记录不存在");
+        }
+        return rows;
+    }
 
     @Override
     public PageObject<SysRole> findPageObjects(String name, Integer pageCurrent) {
@@ -38,5 +58,20 @@ public class SysRoleServiceImpl implements SysRoleService {
         int start=(pageCurrent-1)*pageSize;
         List<SysRole> records = sysRoleDao.findPageObjects(name, start, pageSize);
         return new PageObject<>(rowCount,records,pageCurrent,pageSize);
+    }
+
+    @Override
+    public int insertObjects(SysRole entity, Integer... menuIds) {
+        if(entity==null){
+            throw new IllegalArgumentException("保存对象不能为空");
+        }
+        if(StringUtils.isEmpty(entity.getName())){
+            throw new IllegalArgumentException("角色名不许为空");
+        }
+        if(menuIds==null||menuIds.length==0){
+            throw new IllegalArgumentException("必须为角色授权");
+        }
+        int rows = sysRoleDao.insertObject(entity);
+        return sysRoleMenuDao.insertObjects(entity.getId(), menuIds);
     }
 }
