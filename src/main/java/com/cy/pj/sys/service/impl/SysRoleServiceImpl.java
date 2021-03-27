@@ -1,7 +1,9 @@
 package com.cy.pj.sys.service.impl;
 
 import com.cy.pj.common.exception.ServiceException;
+import com.cy.pj.common.vo.CheckBox;
 import com.cy.pj.common.vo.PageObject;
+import com.cy.pj.common.vo.SysRoleMenuVo;
 import com.cy.pj.sys.dao.SysRoleDao;
 import com.cy.pj.sys.dao.SysRoleMenuDao;
 import com.cy.pj.sys.dao.SysUserRoleDao;
@@ -73,5 +75,47 @@ public class SysRoleServiceImpl implements SysRoleService {
         }
         int rows = sysRoleDao.insertObject(entity);
         return sysRoleMenuDao.insertObjects(entity.getId(), menuIds);
+    }
+
+    @Override
+    public SysRoleMenuVo findObjectById(Integer id) {
+        //1.合法性验证
+        if(id==null||id<=0)
+            throw new ServiceException("id的值不合法");
+        //2.执行查询
+        SysRoleMenuVo result=sysRoleDao.findObjectById(id);
+        System.out.println(result);
+        //3.验证结果并返回
+        if(result==null)
+            throw new ServiceException("此记录已经不存在");
+        return result;
+    }
+
+    @Override
+    public int updateObject(SysRole entity, Integer[] menuIds) {
+        //1.合法性验证
+        if(entity==null)
+            throw new ServiceException("更新的对象不能为空");
+        if(entity.getId()==null)
+            throw new ServiceException("id的值不能为空");
+
+        if(StringUtils.isEmpty(entity.getName()))
+            throw new ServiceException("角色名不能为空");
+        if(menuIds==null||menuIds.length==0)
+            throw new ServiceException("必须为角色指定一个权限");
+
+        //2.更新数据
+        int rows=sysRoleDao.updateObject(entity);
+        if(rows==0)
+            throw new ServiceException("对象可能已经不存在");
+        sysRoleMenuDao.deleteObjectsByRoleId(entity.getId());
+        sysRoleMenuDao.insertObjects(entity.getId(),menuIds);
+        //3.返回结果
+        return rows;
+    }
+
+    @Override
+    public List<CheckBox> findObjects() {
+        return sysRoleDao.findObject();
     }
 }

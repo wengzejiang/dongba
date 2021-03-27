@@ -35,4 +35,25 @@
         (null,#{name},#{note},now(),now(),
         #{createdUser},#{modifiedUser})
     </insert>
+    <!--基于id查询角色自身信息-->
+    <select id="findObjectById" resultMap="sysRoleMenuVo">
+        select id,name,note
+        from sys_roles
+        where id=#{id}
+    </select>
+
+    <resultMap id="sysRoleMenuVo" type="com.cy.pj.common.vo.SysRoleMenuVo">
+        <id column="id" property="id"></id>
+            <collection property="menuIds" ofType="java.lang.Integer" column="id" select="com.cy.pj.sys.dao.SysRoleMenuDao.findMenuIdsByRoleId">
+            </collection>
+    </resultMap>
+    <update id="updateObject" parameterType="com.cy.pj.sys.entity.SysRole">
+        update sys_roles
+        set
+        name=#{name},
+        note=#{note},
+        modifiedUser=#{modifiedUser},
+        modifiedTime=now()
+        where id=#{id}
+    </update>
 </mapper>

@@ -45,4 +45,22 @@ public class SysRoleController {
         return new JsonResult("save ok");
     }
 
+    @RequestMapping("doFindObjectById")
+    @ResponseBody
+    public JsonResult doFindObjectById(Integer id){
+        return new JsonResult(sysRoleService.findObjectById(id));
+    }
+
+    @RequestMapping("doUpdateObject")
+    @ResponseBody
+    public JsonResult doUpdateObject(SysRole entity, Integer... menuIds) {
+        sysRoleService.updateObject(entity, menuIds);
+        return new JsonResult("update ok");
+    }
+
+    @RequestMapping("doFindRoles")
+    @ResponseBody
+    public JsonResult doFindRoles() {
+        return new JsonResult(sysRoleService.findObjects());
+    }
 }

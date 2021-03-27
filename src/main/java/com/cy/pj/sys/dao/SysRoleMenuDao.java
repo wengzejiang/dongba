@@ -3,6 +3,9 @@ package com.cy.pj.sys.dao;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * Package: com.cy.pj.sys.dao
@@ -23,4 +26,7 @@ public interface SysRoleMenuDao {
     int deleteObjectsByRoleId(Integer roleId);
 
     int insertObjects(@Param("roleId") Integer roleId,@Param("menuIds") Integer... menuIds);
+
+    @Select("select menu_id from sys_role_menus where role_id=#{roleId}")
+    List<Integer> findMenuIdsByRoleId(Integer roleId);
 }

@@ -1,8 +1,10 @@
 package com.cy;
 
 import com.cy.pj.common.vo.PageObject;
+import com.cy.pj.common.vo.SysUserDeptVo;
 import com.cy.pj.sys.dao.SysLogDao;
 import com.cy.pj.sys.dao.SysMenuDao;
+import com.cy.pj.sys.dao.SysUserDao;
 import com.cy.pj.sys.entity.SysLog;
 import com.cy.pj.sys.service.SysLogService;
 import com.cy.pj.sys.service.SysRoleService;
@@ -26,6 +28,9 @@ class ApplicationTests {
     private SysMenuDao sysMenuDao;
     @Autowired
     private SysRoleService sysRoleService;
+    
+    @Autowired
+    private SysUserDao sysUserDao;
 
     @Test
     void contextLoads() {
@@ -56,7 +61,8 @@ class ApplicationTests {
 
     @Test
     public void test(){
-        sysRoleService.deleteObject(46);
+        List<SysUserDeptVo> pageObjects = sysUserDao.findPageObjects("", 0, 3);
+        System.out.println(pageObjects);
     }
 
 }

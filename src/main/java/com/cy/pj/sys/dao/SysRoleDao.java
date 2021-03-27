@@ -1,9 +1,12 @@
 package com.cy.pj.sys.dao;
 
+import com.cy.pj.common.vo.CheckBox;
+import com.cy.pj.common.vo.SysRoleMenuVo;
 import com.cy.pj.sys.entity.SysRole;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -27,4 +30,11 @@ public interface SysRoleDao {
     int deleteObject(Integer id);
 
     int insertObject(SysRole entity);
+
+    SysRoleMenuVo findObjectById(Integer id);
+
+    int updateObject(SysRole entity);
+
+    @Select("select id,name from sys_roles")
+    List<CheckBox> findObject();
 }
