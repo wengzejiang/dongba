@@ -1,6 +1,7 @@
 package com.cy.pj.sys.dao;
 
 import com.cy.pj.common.vo.SysUserDeptVo;
+import com.cy.pj.sys.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,4 +24,9 @@ public interface SysUserDao {
 
     int validById(@Param("id") Integer id,@Param("valid") Integer valid,@Param("modifiedUser")String modifiedUser);
 
+    int insertObject(SysUser entity);
+
+    SysUserDeptVo findObjectById(Integer id);
+
+    int updateObject(SysUser entity);
 }

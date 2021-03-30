@@ -2,7 +2,10 @@ package com.cy.pj.sys.service;
 
 import com.cy.pj.common.vo.PageObject;
 import com.cy.pj.common.vo.SysUserDeptVo;
+import com.cy.pj.sys.entity.SysUser;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 /**
  * Package: com.cy.pj.sys.service
@@ -18,4 +21,10 @@ public interface SysUserService {
             String username,Integer pageCurrent);
 
     int validById(@Param("id") Integer id, @Param("valid") Integer valid, @Param("modifiedUser")String modifiedUser);
+
+    int saveObject(SysUser entity, Integer[]roleIds);
+
+    Map<String,Object> findObjectById(Integer userId) ;
+
+    int updateObject(SysUser entity,Integer[] roleIds);
 }

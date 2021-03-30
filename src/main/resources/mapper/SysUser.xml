@@ -23,13 +23,37 @@
         order by createdTime desc
         limit #{startIndex},#{pageSize}
     </select>
-    
+
     <resultMap id="sysUserDeptVo" type="com.cy.pj.common.vo.SysUserDeptVo">
         <!--多对一或一对一-->
         <association property="sysDept" column="deptId" select="com.cy.pj.sys.dao.SysDeptDao.findById"></association>
     </resultMap>
     <update id="validById">
         update sys_users set valid=#{valid},modifiedUser=#{modifiedUser},modifiedTime=now() where id=#{id}
+    </update>
+
+    <insert id="insertObject" parameterType="com.cy.pj.sys.entity.SysUser" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_users
+        (username,password,deptId,email,mobile,salt,valid,
+        createdTime,modifiedTime,createdUser,modifiedUser)
+        values
+        (#{username},#{password},#{deptId},#{email},#{mobile},#{salt},#{valid},
+        now(),now(),#{createdUser},#{modifiedUser})
+    </insert>
+
+    <select id="findObjectById" resultMap="sysUserDeptVo" parameterType="int">
+        select * from sys_users where id=#{id}
+    </select>
+    <update id="updateObject"
+            parameterType="com.cy.pj.sys.entity.SysUser">
+        update sys_users
+        set username=#{username},
+        mobile=#{mobile},
+        email=#{email},
+        deptId=#{deptId},
+        modifiedTime=now(),
+        modifiedUser=#{modifiedUser}
+        where id=#{id}
     </update>
 
 

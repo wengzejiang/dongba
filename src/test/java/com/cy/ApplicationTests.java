@@ -8,6 +8,7 @@ import com.cy.pj.sys.dao.SysUserDao;
 import com.cy.pj.sys.entity.SysLog;
 import com.cy.pj.sys.service.SysLogService;
 import com.cy.pj.sys.service.SysRoleService;
+import com.cy.pj.sys.service.SysUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,9 @@ class ApplicationTests {
     
     @Autowired
     private SysUserDao sysUserDao;
+
+    @Autowired
+    private SysUserService userService;
 
     @Test
     void contextLoads() {
@@ -63,6 +67,12 @@ class ApplicationTests {
     public void test(){
         List<SysUserDeptVo> pageObjects = sysUserDao.findPageObjects("", 0, 3);
         System.out.println(pageObjects);
+    }
+
+    @Test
+    public void aoptest(){
+        PageObject<SysUserDeptVo> po=userService.findPageObjects("admin",1);
+        System.out.println("rowCount:"+po.getRowCount());
     }
 
 }

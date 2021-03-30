@@ -4,12 +4,19 @@ import com.cy.pj.common.exception.ServiceException;
 import com.cy.pj.common.vo.PageObject;
 import com.cy.pj.common.vo.SysUserDeptVo;
 import com.cy.pj.sys.dao.SysUserDao;
+import com.cy.pj.sys.dao.SysUserRoleDao;
+import com.cy.pj.sys.entity.SysUser;
 import com.cy.pj.sys.service.SysUserService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Package: com.cy.pj.sys.service.impl
@@ -21,9 +28,12 @@ import java.util.List;
  * Modified By:
  */
 @Service
+@Slf4j
 public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private SysUserDao sysUserDao;
+    @Autowired
+    private SysUserRoleDao sysUserRoleDao;
     @Override
     public PageObject<SysUserDeptVo> findPageObjects(String username, Integer pageCurrent) {
             //1.对参数进行校验
@@ -57,6 +67,69 @@ public class SysUserServiceImpl implements SysUserService {
         //3.判定结果,并返回
         if(rows==0)
             throw new ServiceException("此记录可能已经不存在");
+        return rows;
+    }
+
+    @Override
+    public int saveObject(SysUser entity, Integer[] roleIds) {
+        log.info("method start:"+System.currentTimeMillis());
+        if(entity==null)
+            throw new ServiceException("保存对象不能为空");
+        if(StringUtils.isEmpty(entity.getUsername()))
+            throw new ServiceException("用户名不能为空");
+        if(StringUtils.isEmpty(entity.getPassword()))
+            throw new ServiceException("密码不能为空");
+        if(roleIds==null || roleIds.length==0)
+            throw new ServiceException("至少要为用户分配角色");
+        String source=entity.getPassword();
+        String salt= UUID.randomUUID().toString();
+        SimpleHash simpleHash=new SimpleHash("MD5", source, salt,1);
+        entity.setSalt(salt);
+        entity.setPassword(simpleHash.toHex());
+        int rows = sysUserDao.insertObject(entity);
+        sysUserRoleDao.insertObjects(entity.getId(),roleIds);
+        log.info("method end:"+System.currentTimeMillis());
+        return rows;
+    }
+
+    @Override
+    public Map<String, Object> findObjectById(Integer userId) {
+        log.info("method start {}", System.currentTimeMillis());
+        //1.合法性验证
+        if(userId==null||userId<=0){
+            throw new ServiceException("参数数据不合法,userId="+userId);
+        }
+        SysUserDeptVo user = sysUserDao.findObjectById(userId);
+        log.info("================"+user);
+        if(user==null){
+            throw new ServiceException("用户可能不存在");
+        }
+        List<Integer> roleIds = sysUserRoleDao.findRoleIdsByUserId(userId);
+        log.info("================"+roleIds);
+        Map<String, Object> map = new HashMap<>();
+        map.put("user",user);
+        map.put("roleIds",roleIds);
+        log.info("method end {}", System.currentTimeMillis());
+        return map;
+    }
+
+    @Override
+    public int updateObject(SysUser entity, Integer[] roleIds) {
+        //1.参数有效性验证
+        if(entity==null)
+            throw new IllegalArgumentException("保存对象不能为空");
+        if(StringUtils.isEmpty(entity.getUsername()))
+            throw new IllegalArgumentException("用户名不能为空");
+        if(roleIds==null||roleIds.length==0)
+            throw new IllegalArgumentException("必须为其指定角色");
+        //其它验证自己实现，例如用户名已经存在，密码长度，...
+        //2.更新用户自身信息
+        int rows=sysUserDao.updateObject(entity);
+        //3.保存用户与角色关系数据
+        sysUserRoleDao.deleteObjectsByUserId(entity.getId());
+        sysUserRoleDao.insertObjects(entity.getId(),
+                roleIds);
+        //4.返回结果
         return rows;
     }
 }
