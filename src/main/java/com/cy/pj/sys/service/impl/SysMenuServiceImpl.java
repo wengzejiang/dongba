@@ -1,5 +1,6 @@
 package com.cy.pj.sys.service.impl;
 
+import com.cy.pj.common.annotation.RequiredCache;
 import com.cy.pj.common.exception.ServiceException;
 import com.cy.pj.common.vo.Node;
 import com.cy.pj.sys.dao.SysMenuDao;
@@ -56,6 +57,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         return rows;
     }
 
+    @RequiredCache
     @Override
     public List<Node> findZtreeMenuNodes() {
         return sysMenuDao.findZtreeMenuNodes();

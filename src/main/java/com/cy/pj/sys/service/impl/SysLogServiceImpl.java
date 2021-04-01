@@ -55,4 +55,9 @@ public class SysLogServiceImpl implements SysLogService {
         }
         return rows;
     }
+
+    @Override
+    public void saveObject(SysLog entity) {
+        sysLogDao.insertObject(entity);
+    }
 }

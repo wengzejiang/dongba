@@ -1,5 +1,6 @@
 package com.cy.pj.sys.service.impl;
 
+import com.cy.pj.common.annotation.RequestLog;
 import com.cy.pj.common.exception.ServiceException;
 import com.cy.pj.common.vo.PageObject;
 import com.cy.pj.common.vo.SysUserDeptVo;
@@ -35,6 +36,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private SysUserRoleDao sysUserRoleDao;
     @Override
+    @RequestLog(value = "用户查询")
     public PageObject<SysUserDeptVo> findPageObjects(String username, Integer pageCurrent) {
             //1.对参数进行校验
             if(pageCurrent==null||pageCurrent<1)
@@ -53,7 +55,9 @@ public class SysUserServiceImpl implements SysUserService {
         return new PageObject<>(rowCount, records, pageCurrent, pageSize);
         }
 
+
     @Override
+    @RequestLog(value = "禁用启动")//注解中的内容表示操作
     public int validById(Integer id, Integer valid, String modifiedUser) {
         //1.合法性验证
         if(id==null||id<=0)
