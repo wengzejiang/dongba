@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.cy.pj.sys.entity.SysDept;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -17,6 +19,9 @@ import com.cy.pj.sys.service.SysDeptService;
 public class SysDeptServiceImpl implements SysDeptService {
 	@Autowired
 	private SysDeptDao sysDeptDao;
+
+	//Cacheable用于告诉spring框架，它描述的方法的返回值要存储到cache
+	@Cacheable(value = "deptCache")
 	@Override
 	public List<Map<String, Object>> findObjects() {
 		List<Map<String, Object>> list=
@@ -51,8 +56,10 @@ public class SysDeptServiceImpl implements SysDeptService {
 		//3.返回数据
 		return rows;
 	}
-	
+
+	//allEntries表示要清除所有的数据
 	@Override
+	@CacheEvict(value = "deptCache",allEntries = true)
 	public int saveObject(SysDept entity) {
 		//1.合法验证
 		if(entity==null)

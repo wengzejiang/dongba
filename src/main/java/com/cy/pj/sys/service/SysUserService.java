@@ -27,4 +27,5 @@ public interface SysUserService {
     Map<String,Object> findObjectById(Integer userId) ;
 
     int updateObject(SysUser entity,Integer[] roleIds);
+
 }

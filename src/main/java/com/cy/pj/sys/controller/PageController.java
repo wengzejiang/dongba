@@ -24,6 +24,11 @@ public class PageController {
         return "starter";
     }
 
+    @RequestMapping("doLoginUI")
+    public String doLoginUI(){
+        return "login";
+    }
+
 
 //    @RequestMapping("log/log_list")
 //    public String doLogUI(){

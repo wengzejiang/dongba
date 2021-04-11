@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
@@ -30,6 +33,11 @@ import java.util.UUID;
  */
 @Service
 @Slf4j
+@Transactional(timeout = 30,	//超时时间30就回滚
+        readOnly = false,//悲观锁,true一般只用于查询
+        isolation = Isolation.READ_COMMITTED,//避免脏读
+        rollbackFor = Throwable.class, //出现异常就事务
+        propagation = Propagation.REQUIRED)//事务传播特性
 public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private SysUserDao sysUserDao;
@@ -97,6 +105,8 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
+    //方法上的@Transactional注解用于定义事务特性,readOnly = true一般用于描述查询方法，表示这是一个读事务，允许并发读
+    @Transactional(readOnly = true)
     public Map<String, Object> findObjectById(Integer userId) {
         log.info("method start {}", System.currentTimeMillis());
         //1.合法性验证
