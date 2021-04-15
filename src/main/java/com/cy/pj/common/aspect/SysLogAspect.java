@@ -3,10 +3,13 @@ package com.cy.pj.common.aspect;
 import com.cy.pj.common.annotation.RequestLog;
 import com.cy.pj.common.utils.IPUtils;
 import com.cy.pj.sys.entity.SysLog;
+import com.cy.pj.sys.entity.SysUser;
 import com.cy.pj.sys.service.SysLogService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -87,7 +90,8 @@ public class SysLogAspect {
         String params=new ObjectMapper().writeValueAsString(paramsObj);
         //2.封装日志信息
         SysLog log=new SysLog();
-        log.setUsername("username");//登陆的用户
+        SysUser user = (SysUser) SecurityUtils.getSubject().getPrincipal();
+        log.setUsername(user.getUsername());//登陆的用户
         //假如目标方法对象上有注解,我们获取注解定义的操作值
         RequestLog requestLog=
                 targetMethod.getDeclaredAnnotation(RequestLog.class);

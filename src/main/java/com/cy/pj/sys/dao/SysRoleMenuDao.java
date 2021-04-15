@@ -29,4 +29,6 @@ public interface SysRoleMenuDao {
 
     @Select("select menu_id from sys_role_menus where role_id=#{roleId}")
     List<Integer> findMenuIdsByRoleId(Integer roleId);
+
+    List<Integer> findMenuIdsByRoleIds(@Param("roleIds") Integer... roleIds);
 }

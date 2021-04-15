@@ -1,5 +1,6 @@
 package com.cy.pj.sys.controller;
 
+import com.cy.pj.common.utils.ShiroUtils;
 import com.cy.pj.common.vo.JsonResult;
 import com.cy.pj.sys.entity.SysUser;
 import com.cy.pj.sys.service.SysUserService;
@@ -38,7 +39,7 @@ public class SysUserController {
     @RequestMapping("doValidById")
     @ResponseBody
     public JsonResult doValidById(Integer id,Integer valid){
-        sysUserService.validById(id,valid, "admin");//"admin"用户将来是登陆用户
+        sysUserService.validById(id,valid, ShiroUtils.getUserName());//"admin"用户将来是登陆用户
         return new JsonResult("update ok");
     }
 
@@ -66,7 +67,7 @@ public class SysUserController {
 
     @RequestMapping("doLogin")
     @ResponseBody
-    public JsonResult doLogin(String username,String password){
+    public JsonResult doLogin(String username,String password,boolean isRememberMe){
         //1.获取Subject对象
         Subject subject= SecurityUtils.getSubject();
         //2.通过Subject提交用户信息,交给shiro框架进行认证操作
@@ -74,6 +75,10 @@ public class SysUserController {
         UsernamePasswordToken token= new UsernamePasswordToken(
                         username,//身份信息
                         password);//凭证信息
+        if(isRememberMe) {
+            //告诉SecurityManager要记住登陆用户
+            token.setRememberMe(true);
+        }
         //2.2对用户信息进行身份认证
         subject.login(token);
         //分析:
@@ -81,6 +86,13 @@ public class SysUserController {
         //2)SecurityManager将token传递给认证管理器
         //3)认证管理器会将token传递给realm
         return new JsonResult("login ok");
+    }
+
+    @RequestMapping("doUpdatePassword")
+    @ResponseBody
+    public JsonResult doUpdatePassword(String pwd,String newPwd,String cfgPwd){
+        sysUserService.updatePassword(pwd,newPwd,cfgPwd);
+        return new JsonResult("update ok");
     }
 }
 

@@ -2,13 +2,18 @@ package com.cy.pj.sys.service.impl;
 
 import com.cy.pj.common.annotation.RequestLog;
 import com.cy.pj.common.exception.ServiceException;
+import com.cy.pj.common.utils.ShiroUtils;
 import com.cy.pj.common.vo.PageObject;
 import com.cy.pj.common.vo.SysUserDeptVo;
+import com.cy.pj.common.vo.SysUserMenuVo;
+import com.cy.pj.sys.dao.SysMenuDao;
+import com.cy.pj.sys.dao.SysRoleMenuDao;
 import com.cy.pj.sys.dao.SysUserDao;
 import com.cy.pj.sys.dao.SysUserRoleDao;
 import com.cy.pj.sys.entity.SysUser;
 import com.cy.pj.sys.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +48,10 @@ public class SysUserServiceImpl implements SysUserService {
     private SysUserDao sysUserDao;
     @Autowired
     private SysUserRoleDao sysUserRoleDao;
+    @Autowired
+    private SysRoleMenuDao sysRoleMenuDao;
+    @Autowired
+    private SysMenuDao sysMenuDao;
     @Override
     @RequestLog(value = "用户查询")
     public PageObject<SysUserDeptVo> findPageObjects(String username, Integer pageCurrent) {
@@ -65,6 +74,13 @@ public class SysUserServiceImpl implements SysUserService {
 
 
     @Override
+    //1.由已认证的用户进行授权
+    //2.认证用户具备访问这个资源的权限
+    //3.1用户可以访问哪些菜单-菜单中有一个权限标识字段
+    //3.2检查用户拥有的权限标识中是否包含@RequiresPermissions注解中定义的字符串，假如有则认为有权限
+    //由谁授权？SecurityManager(这个对象本身就是一个授权管理器)
+    //表示此方法必须授权才能访问
+    @RequiresPermissions("sys:user:update")
     @RequestLog(value = "禁用启动")//注解中的内容表示操作
     public int validById(Integer id, Integer valid, String modifiedUser) {
         //1.合法性验证
@@ -145,5 +161,48 @@ public class SysUserServiceImpl implements SysUserService {
                 roleIds);
         //4.返回结果
         return rows;
+    }
+
+    @Override
+    public int updatePassword(String sourcePassword, String newPassword, String cfgPassword) {
+        //1.参数校验
+        //1)非空校验
+        if(StringUtils.isEmpty(sourcePassword)){
+            throw new IllegalArgumentException("原密码不能为空");
+        }
+        if(StringUtils.isEmpty(newPassword)){
+            throw new IllegalArgumentException("新密码不能为空");
+        }
+        //2)新密码和确认密码是否相同
+        if(!newPassword.equals(cfgPassword)){
+            throw new IllegalArgumentException("密码和确认起码不一致");
+        }
+        //3)校验原密码是否正确(将sourcePass加密以后与数据库中的密码进行比对)
+        SysUser user=ShiroUtils.getUser();
+        SimpleHash sHash=new SimpleHash("MD5", sourcePassword, user.getSalt(),1 );
+        String hashedpassword = user.getPassword();
+        if(!hashedpassword.equals(sHash.toHex())){//sHash.toHex()密码加密后转换为16进制
+            throw new ServiceException("原密码输入不正确");
+        }
+        //2.修改密码
+        //1)获取新的盐值
+        String newSalt = UUID.randomUUID().toString();
+        //2)对用户输入的新的密码进行加密
+        sHash=new SimpleHash("MD5", newPassword,newSalt,1 );
+        //3)更新密码
+        int rows = sysUserDao.updatePassword(sHash.toHex(), newSalt, user.getId());
+        //3.返回结果
+        return rows;
+    }
+
+    @Override
+    public List<SysUserMenuVo> findUserMenusByUserId(Integer userId) {
+        //1.对用户id进行判断
+        //2.基于用户id查找用户对应的角色id
+        List<Integer> roleIds= sysUserRoleDao.findRoleIdsByUserId(userId);
+        //3.基于角色id获取角色对应的菜单信息,并进行封装.
+        List<Integer> menuIds=sysRoleMenuDao.findMenuIdsByRoleIds(roleIds.toArray(new Integer[] {}));
+        //4.基于菜单id获取用户对应的菜单信息并返回
+        return sysMenuDao.findMenusByIds(menuIds);
     }
 }

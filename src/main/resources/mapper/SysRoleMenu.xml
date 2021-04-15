@@ -14,4 +14,13 @@
             (#{roleId},#{menuId})
         </foreach>
     </insert>
+
+    <select id="findMenuIdsByRoleIds" resultType="java.lang.Integer">
+        select menu_id from sys_role_menus
+        <where>
+        <foreach collection="roleIds" separator="or" open="(" close=")" item="roleId">
+            role_id=#{roleId}
+        </foreach>
+        </where>
+    </select>
 </mapper>

@@ -1,17 +1,30 @@
 package com.cy.pj.sys.service.realm;
 
+import com.cy.pj.sys.dao.SysMenuDao;
+import com.cy.pj.sys.dao.SysRoleMenuDao;
 import com.cy.pj.sys.dao.SysUserDao;
+import com.cy.pj.sys.dao.SysUserRoleDao;
 import com.cy.pj.sys.entity.SysUser;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.apache.shiro.util.ByteSource.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Package: com.cy.pj.sys.service.remal
@@ -24,16 +37,49 @@ import org.springframework.stereotype.Service;
  */
 //Shiro框架中Realm对象，通过此对象完成认证和授权业务数据的获取和封装
 @Service
+@Slf4j
 public class ShiroUserRealm extends AuthorizingRealm {
 
     @Autowired
     private SysUserDao sysUserDao;
+    @Autowired
+    private SysUserRoleDao sysUserRoleDao;
+    @Autowired
+    private SysRoleMenuDao sysRoleMenuDao;
+    @Autowired
+    private SysMenuDao sysMenuDao;
 
     //负责授权信息的获取和封装
     @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-
-        return null;
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        //1.获取登陆用户信息(当获取用户身份时，我们应该如何进行转换，由登陆时设置的身份决定即73行）
+        SysUser user =(SysUser)principals.getPrimaryPrincipal();
+        //2.基于登陆用户id查找用户对应的角色id并校验
+        List<Integer> roleIds =sysUserRoleDao.findRoleIdsByUserId(user.getId());
+        if(roleIds == null || roleIds.size() == 0) {
+            throw new AuthorizationException();
+        }
+        //3.基于角色id获取角色对应的菜单id并校验
+        List<Integer> menuIds = sysRoleMenuDao.findMenuIdsByRoleIds(roleIds.toArray(new Integer[]{}));
+        if(menuIds==null||menuIds.size()==0){
+            throw new AuthorizationException();
+        }
+        //4.基于菜单id获取菜单对应的授权标识(permission)
+        List<String> permissions = sysMenuDao.findPermissions(menuIds.toArray(new Integer[]{}));
+        if(permissions==null||permissions.size()==0){
+            throw new AuthorizationException();
+        }
+        log.info(String.valueOf(permissions));
+        //5.封装数据并返回
+        Set<String> set=new HashSet<>();//不允许内容重复
+        for(String per:permissions){
+            if(!StringUtils.isEmpty(per)){
+                set.add(per);
+            }
+        }
+        SimpleAuthorizationInfo info= new SimpleAuthorizationInfo();
+        info.setStringPermissions(set);
+        return info;//返回给securityManager,由此对象基于用户权限信息进行授权
     }
 
     //此方法负责认证信息的获取和封装
@@ -61,6 +107,7 @@ public class ShiroUserRealm extends AuthorizingRealm {
                 credentialsSalt,//盐
                 getName()
         );
+        log.info(String.valueOf(info));
         return info;//info对象会返回给securityManager对象，由此对象调用认证方法对用户信息进行认证
     }
 

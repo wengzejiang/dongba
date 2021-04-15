@@ -60,5 +60,13 @@
         select * from sys_users where username=#{username}
     </select>
 
+    <update id="updatePassword">
+        update sys_users
+        set password=#{password},
+        salt=#{salt},
+        modifiedTime=now()
+        where id=#{id}
+    </update>
+
 
 </mapper>

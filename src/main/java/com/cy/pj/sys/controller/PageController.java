@@ -1,9 +1,17 @@
 package com.cy.pj.sys.controller;
 
+import com.cy.pj.common.utils.ShiroUtils;
+import com.cy.pj.common.vo.SysUserMenuVo;
+import com.cy.pj.sys.entity.SysUser;
+import com.cy.pj.sys.service.SysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * Package: com.cy.pj.sys.controller
@@ -17,10 +25,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/")
 public class PageController {
-
+    @Autowired
+    private SysUserService sysUserService;
 
     @RequestMapping("doIndexUI")
-    public String doIndexUI(){
+    public String doIndexUI(Model model){//model对象为springmvc模块设计的用于封装响应数据的一个对象
+        SysUser user=ShiroUtils.getUser();
+        model.addAttribute("username", user.getUsername());//底层会将数据存储到请求作用域
+        List<SysUserMenuVo> userMenus= sysUserService.findUserMenusByUserId(user.getId());
+        model.addAttribute("userMenus",userMenus);
         return "starter";
     }
 
@@ -50,5 +63,7 @@ public class PageController {
     public String doModule(@PathVariable String moduleUI){
         return "sys/"+moduleUI;
     }
+
+
 
 }

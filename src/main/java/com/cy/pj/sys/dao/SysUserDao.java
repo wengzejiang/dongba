@@ -4,6 +4,7 @@ import com.cy.pj.common.vo.SysUserDeptVo;
 import com.cy.pj.sys.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -31,4 +32,6 @@ public interface SysUserDao {
     int updateObject(SysUser entity);
 
     SysUser findUserByUserName(String username);
+
+    int updatePassword(@Param("password") String password,@Param("salt") String salt,@Param("id")Integer id);
 }
