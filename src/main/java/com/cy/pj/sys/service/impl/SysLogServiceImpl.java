@@ -6,6 +6,7 @@ import com.cy.pj.sys.dao.SysLogDao;
 import com.cy.pj.sys.entity.SysLog;
 import com.cy.pj.sys.service.SysLogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,5 +55,11 @@ public class SysLogServiceImpl implements SysLogService {
             throw new ServiceException("记录不存在");
         }
         return rows;
+    }
+
+    @Override
+    @Async
+    public void saveObject(SysLog entity) {
+        sysLogDao.insertObject(entity);
     }
 }

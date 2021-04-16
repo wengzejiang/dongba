@@ -58,7 +58,8 @@
 	   $.post(url,params,function(result){
 		    if(result.state==1){
 			 alert(result.message);
-			 location.href="doLoginUI?t="+Math.random();
+			 //location.href="doLoginUI?t="+Math.random();
+			 location.href="doLogout?t="+Math.random();
 		    }else{
 			 alert(result.message);
 		    }

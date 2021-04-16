@@ -24,4 +24,6 @@ public interface SysLogDao {
     List<SysLog> findPageObjects( @Param("username") String username,@Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
     int deleteObjects(@Param("ids")Integer... ids);
+
+    int insertObject(SysLog entity);
 }

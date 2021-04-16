@@ -1,10 +1,14 @@
 package com.cy;
 
 import com.cy.pj.common.vo.PageObject;
+import com.cy.pj.common.vo.SysUserDeptVo;
 import com.cy.pj.sys.dao.SysLogDao;
 import com.cy.pj.sys.dao.SysMenuDao;
+import com.cy.pj.sys.dao.SysUserDao;
 import com.cy.pj.sys.entity.SysLog;
 import com.cy.pj.sys.service.SysLogService;
+import com.cy.pj.sys.service.SysRoleService;
+import com.cy.pj.sys.service.SysUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +27,14 @@ class ApplicationTests {
 
     @Autowired
     private SysMenuDao sysMenuDao;
+    @Autowired
+    private SysRoleService sysRoleService;
+    
+    @Autowired
+    private SysUserDao sysUserDao;
+
+    @Autowired
+    private SysUserService userService;
 
     @Test
     void contextLoads() {
@@ -51,5 +63,16 @@ class ApplicationTests {
         }
     }
 
+    @Test
+    public void test(){
+        List<SysUserDeptVo> pageObjects = sysUserDao.findPageObjects("", 0, 3);
+        System.out.println(pageObjects);
+    }
+
+    @Test
+    public void aoptest(){
+        PageObject<SysUserDeptVo> po=userService.findPageObjects("admin",1);
+        System.out.println("rowCount:"+po.getRowCount());
+    }
 
 }

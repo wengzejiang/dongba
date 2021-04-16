@@ -27,6 +27,57 @@
         (#{name},#{url},#{type},#{sort},#{note},#{parentId},
         #{permission},now(),now(),#{createdUser},#{modifiedUser})
     </insert>
+    <update id="updateObject" parameterType="com.cy.pj.sys.entity.SysMenu">
+    update sys_menus set
+        name=#{name},
+        type=#{type},
+        sort=#{sort},
+        url=#{url},
+        parentId=#{parentId},
+        permission=#{permission},
+        modifiedUser=#{modifiedUser},
+        modifiedTime=now()
+        where id=#{id}
+    </update>
+    <select id="findPermissions" resultType="java.lang.String">
+        select permission <!-- sys:user:update -->
+        from sys_menus
+        <where>
+        <foreach collection="menuIds" separator="or" open="(" close=")" item="item">
+            id=#{item}
+        </foreach>
+        </where>
+    </select>
+
+    <select id="findMenusByIds" resultMap="SysUserMenuVo">
+        select p.id,p.name,p.url,c.id cid,c.name cname,c.url curl
+        from sys_menus p join sys_menus c
+        on c.parentId=p.id
+        <where>
+            <foreach collection="menuIds"
+                     open="("
+                     close=")"
+                     separator="or"
+                     item="menuId">
+                c.id=#{menuId}
+            </foreach>
+            and p.parentId is null
+        </where>
+    </select>
+
+    <resultMap id="SysUserMenuVo" type="com.cy.pj.common.vo.SysUserMenuVo">
+        <!--一级菜单映射-->
+        <!--主键映射使用id元素-->
+        <id column="id" property="id"></id>
+        <result property="name" column="name"></result>
+        <result property="url" column="url"></result>
+        <!--二级菜单映射-->
+        <collection property="childs" ofType="com.cy.pj.common.vo.SysUserMenuVo">
+            <id  property="id" column="cid"/>
+            <result property="name" column="cname"/>
+            <result property="url" column="curl"/>
+        </collection>
+    </resultMap>
 
 
 </mapper>
